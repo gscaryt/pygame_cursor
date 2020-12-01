@@ -1,14 +1,19 @@
 import pygame
+import pygame_cursor_lib as pclib
 
 ZOOM = 10
+COLOR_BG = (50,50,50)
+COLOR_CANVAS = (150,150,150)
+COLOR_GRID = (120,120,120)
+BLACK = (0,0,0)
+WHITE = (255,255,255)
+COLOR_HOTSPOT = (120,0,0)
+COLOR_HIGHLIGHT = (0,200,200)
 
-class Canvas:
+class CursorCanvas:
     def __init__(self, COLS, ROWS):
         self.COLS = COLS
         self.ROWS = ROWS
-        self.WIDTH = COLS*ZOOM
-        self.HEIGHT = ROWS*ZOOM
-        self.rect = pygame.rect.Rect(0,0,self.WIDTH,self.HEIGHT)
         self.GRID = []
         self.HOT_SPOT = (self.COLS//2, self.ROWS//2)
         self.CORNER = (0,0)
@@ -17,10 +22,23 @@ class Canvas:
             for _ in range(COLS):
                 self.GRID[j].append(0)
 
+    @property
+    def WIDTH(self):
+        return self.COLS*ZOOM
+    
+    @property
+    def HEIGHT(self):
+        return self.ROWS*ZOOM
+    
+    @property
+    def RECT(self):
+        return pygame.rect.Rect(0,0,self.WIDTH,self.HEIGHT)
+
     def show_canvas(self, WINDOW):
-        self.rect.center = (WINDOW.get_width()//2, WINDOW.get_height()//2)
+        canva_rect = self.RECT
+        canva_rect.center = (WINDOW.get_width()//2, WINDOW.get_height()//2)
         self.CORNER = (WINDOW.get_width()/2-self.WIDTH/2, WINDOW.get_height()/2-self.HEIGHT/2)
-        pygame.draw.rect(WINDOW, pygame.Color(100,100,100), self.rect)
+        pygame.draw.rect(WINDOW, COLOR_CANVAS, canva_rect)
 
     def show_grid(self, WINDOW):
         for i in range(self.COLS):
@@ -29,9 +47,9 @@ class Canvas:
                 y = round(self.CORNER[1] + j*ZOOM)
                 SQUARE = pygame.rect.Rect(x,y,ZOOM,ZOOM)
                 if self.HOT_SPOT == (i, j):
-                    pygame.draw.rect(WINDOW, pygame.Color(120,0,0), SQUARE, 1)
+                    pygame.draw.rect(WINDOW, COLOR_HOTSPOT, SQUARE, 1)
                 else:
-                    pygame.draw.rect(WINDOW, pygame.Color(120,120,120), SQUARE, 1)
+                    pygame.draw.rect(WINDOW, COLOR_GRID, SQUARE, 1)
 
     def show_drawing(self, WINDOW):
         for i in range(self.COLS):
@@ -40,9 +58,9 @@ class Canvas:
                 y = round(self.CORNER[1] + j*ZOOM)
                 SQUARE = pygame.rect.Rect(x,y,ZOOM,ZOOM)
                 if self.get_square_state(i, j) == 1:
-                    pygame.draw.rect(WINDOW, pygame.Color(0,0,0), SQUARE)
+                    pygame.draw.rect(WINDOW, BLACK, SQUARE)
                 elif self.get_square_state(i, j) == -1:
-                    pygame.draw.rect(WINDOW, pygame.Color(255,255,255), SQUARE)
+                    pygame.draw.rect(WINDOW, WHITE, SQUARE)
 
     def get_square(self):
         mouse = pygame.mouse.get_pos()
@@ -56,20 +74,20 @@ class Canvas:
         else:
             return False
 
+    def get_square_state(self, col, row):
+        return self.GRID[row][col]
+
     def highlight(self, WINDOW):
         hover = self.get_square()
         if hover:
             x = self.CORNER[0] + hover[0]*ZOOM
             y = self.CORNER[1] + hover[1]*ZOOM
             SQUARE = pygame.rect.Rect(x,y,ZOOM,ZOOM)
-            pygame.draw.rect(WINDOW, pygame.Color(180,180,180), SQUARE)
-
-    def get_square_state(self, col, row):
-        return self.GRID[row][col]
+            pygame.draw.rect(WINDOW, COLOR_HIGHLIGHT, SQUARE, 1)
 
     def draw(self):
-        click = pygame.mouse.get_pressed()
         if self.get_square():
+            click = pygame.mouse.get_pressed()
             col, row = self.get_square()
             if click == (1,0,0):
                 self.GRID[row][col] = 1
@@ -77,6 +95,37 @@ class Canvas:
                 self.GRID[row][col] = -1
             elif click == (0,1,0):
                 self.GRID[row][col] = 0
+
+    def fill(self):
+        if self.get_square():
+            col, row = self.get_square()
+            old_state = self.get_square_state(col, row)
+            click = pygame.mouse.get_pressed()
+            if click == (1,0,0):
+                new_state = 1
+            elif click == (0,0,1):
+                new_state = -1
+            elif click == (0,1,0):
+                new_state = 0
+            else:
+                new_state = None
+            if old_state != new_state and new_state is not None:
+                self.__fill(col, row, old_state, new_state)
+
+    def __fill(self, col, row, old_state, new_state):
+        self.GRID[row][col] = new_state
+        if col < self.COLS-1:
+            if self.get_square_state(col+1,row) == old_state:
+                self.__fill(col+1,row,old_state,new_state)
+        if row < self.ROWS-1:
+            if self.get_square_state(col,row+1) == old_state:
+                self.__fill(col,row+1,old_state,new_state)
+        if col > 0:
+            if self.get_square_state(col-1,row) == old_state:
+                self.__fill(col-1,row,old_state,new_state)
+        if row > 0:
+            if self.get_square_state(col,row-1) == old_state:
+                self.__fill(col,row-1,old_state,new_state)
 
     def set_cursor(self, cursor=1):
         if cursor == 0:
@@ -105,21 +154,38 @@ class Canvas:
             line = ''
         return tuple(cursor)
 
+    def open_cursor(self, name):
+        name = str(name).lower()
+        cursor = pclib.Cursor.library[name]
+        self.COLS = cursor.size[0]
+        self.ROWS = cursor.size[1]
+        self.HOT_SPOT = cursor.hot_spot
+        self.GRID = []
+        for i, line in enumerate(cursor.cursor):
+            self.GRID.append([])
+            line = line.strip("'")
+            for char in line:
+                if char == "X":
+                    self.GRID[i].append(1)
+                elif char == ".":
+                    self.GRID[i].append(-1)
+                else:
+                    self.GRID[i].append(0)
+
     def save_cursor(self, name):
         cursor = self.get_cursor()
         name = str(name).lower()
-        with open("cursor_lib.py", "a+") as filename:
-            filename.write("# START OF CURSOR FUNCTION: " + name + "\n")
-            filename.write("def set_cursor_"+name+"():\n")
-            filename.write("    # Cursor: " + name +"\n") 
-            filename.write("    # Size: " + str((self.COLS, self.ROWS)) + "\n")
-            filename.write("    # Hot Spot: " + str(self.HOT_SPOT) + "\n")
-            filename.write("    cursor_" + name + " = (\n")
+        with open("pygame_cursor_lib.py", "a+") as filename:
+            filename.write(name + " = Cursor(\n")
+            filename.write("    '" + name + "',\n") 
+            filename.write("    " + str((self.COLS, self.ROWS)) + ",\n")
+            filename.write("    " + str(self.HOT_SPOT) + ",\n")
+            filename.write("    (\n")
             for line in cursor:
                 filename.write("        '" + str(line) + "',\n")
             filename.write("    )\n")
-            filename.write("    return pygame.mouse.set_cursor(" + str((self.COLS, self.ROWS)) + ',' + str(self.HOT_SPOT) + ',' + '*pygame.cursors.compile(cursor_' + name + '))\n')
-            filename.write("# END OF CURSOR FUNCTION: " + name + "\n\n")
+            filename.write(")\n\n")
+
 
 def input_size():
     _valid = False
@@ -154,6 +220,7 @@ def input_size():
             print("You must give an integer number of rows (HEIGHT).")
     return COLS, ROWS
 
+
 def main():
     global ZOOM
     pygame.init()
@@ -161,22 +228,29 @@ def main():
     clock = pygame.time.Clock()
     COLS, ROWS = input_size()
     ZOOM = max(10 - int(ROWS//20), 1)
+    
     pygame.display.set_caption("Pygame Cursor Drawing")
     WINDOW = pygame.display.set_mode((COLS*ZOOM + ZOOM*10, ROWS*ZOOM + ZOOM*10))
     
-    CANVAS = Canvas(COLS, ROWS)
+    CANVAS = CursorCanvas(COLS, ROWS)
 
     while run:
         clock.tick(60)
-        WINDOW.fill((50,50,50))
+        WINDOW.fill(COLOR_BG)
         CANVAS.show_canvas(WINDOW)
         CANVAS.show_drawing(WINDOW)
         CANVAS.show_grid(WINDOW)
         CANVAS.highlight(WINDOW)
+
         for event in pygame.event.get():
+
             click = pygame.mouse.get_pressed()
             if click:
-                CANVAS.draw()
+                if pygame.key.get_pressed()[pygame.K_f]:
+                    CANVAS.fill()
+                else:
+                    CANVAS.draw()
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     CANVAS.set_cursor()
@@ -184,8 +258,13 @@ def main():
                     CANVAS.set_cursor(0)
                 if event.key == pygame.K_h:
                     CANVAS.def_hotspot()
+                if event.key == pygame.K_o:
+                    CANVAS.open_cursor("eye")
+                    WINDOW = pygame.display.set_mode((CANVAS.WIDTH + ZOOM*10, CANVAS.HEIGHT + ZOOM*10))
+                if event.key == pygame.K_s:
+                    CANVAS.save_cursor("TESTING")
+
             if event.type == pygame.QUIT:
-                CANVAS.save_cursor("TESTING")
                 run = False
 
         pygame.display.update()
