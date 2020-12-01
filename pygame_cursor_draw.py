@@ -18,10 +18,7 @@ class CursorCanvas:
         self.HOT_SPOT = (self.COLS//2, self.ROWS//2)
         self.CORNER = (0,0)
         self.__recursion_failsafe = 0
-        for j in range(ROWS):
-            self.GRID.append([])
-            for _ in range(COLS):
-                self.GRID[j].append(0)
+        self.build_grid()
 
     @property
     def WIDTH(self):
@@ -34,6 +31,12 @@ class CursorCanvas:
     @property
     def RECT(self):
         return pygame.rect.Rect(0,0,self.WIDTH,self.HEIGHT)
+
+    def build_grid(self):
+        for j in range(self.ROWS):
+            self.GRID.append([])
+            for _ in range(self.COLS):
+                self.GRID[j].append(0)
 
     def show_canvas(self, WINDOW):
         canva_rect = self.RECT
@@ -212,10 +215,14 @@ class CursorCanvas:
             filename.write("    )\n")
             filename.write(")\n\n")
 
+    def reset(self):
+        self.COLS, self.ROWS = input_size()
+        self.HOT_SPOT = (self.COLS//2, self.ROWS//2)
+        self.GRID = []
+        self.build_grid()
 
-def input_size():
-    _valid = False
-    while not _valid:
+def input_cols():
+    while True:
         COLS = input("What WIDTH (columns) your cursor will have? (Must be divisible by 8): ")
         if COLS.isdecimal():
             COLS = int(COLS)
@@ -226,11 +233,12 @@ def input_size():
             elif COLS > 80:
                 print("WIDTH (columns) must be less than 81.") 
             else:
-                _valid = True # Probably
+                return COLS
         else:
             print("You must give an integer number of columns (WIDTH).")
-    _valid = False
-    while not _valid:
+
+def input_rows():
+    while True:
         ROWS = input("What HEIGHT (rows) your cursor will have? (Must be divisible by 8): ")
         if ROWS.isdecimal():
             ROWS = int(ROWS)
@@ -238,14 +246,17 @@ def input_size():
                 print("You cannot have a cursor with 0 HEIGHT (rows).")
             elif ROWS%8 != 0:
                 print("HEIGHT (rows) must be divisible by 8. (Note: Pygame requirement)")
-            elif COLS > 80:
+            elif ROWS > 80:
                 print("HEIGHT (rows) must be less than 81.") 
             else:
-                _valid = True # Probably
+                return ROWS
         else:
             print("You must give an integer number of rows (HEIGHT).")
-    return COLS, ROWS
 
+def input_size():
+    COLS = input_cols()
+    ROWS = input_rows()
+    return COLS, ROWS
 
 def main():
     global ZOOM
@@ -286,9 +297,14 @@ def main():
                     CANVAS.def_hotspot()
                 if event.key == pygame.K_l:
                     CANVAS.load_cursor()
+                    ZOOM = max(10 - int(CANVAS.ROWS//20), 1)
                     WINDOW = pygame.display.set_mode((CANVAS.WIDTH + ZOOM*10, CANVAS.HEIGHT + ZOOM*10))
                 if event.key == pygame.K_s:
                     CANVAS.save_cursor()
+                if event.key == pygame.K_r:
+                    CANVAS.reset()
+                    ZOOM = max(10 - int(CANVAS.ROWS//20), 1)
+                    WINDOW = pygame.display.set_mode((CANVAS.WIDTH + ZOOM*10, CANVAS.HEIGHT + ZOOM*10))
 
             if event.type == pygame.QUIT:
                 run = False
