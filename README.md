@@ -16,7 +16,7 @@ Script to easily draw ASCII cursors compatible with pygame.mouse.set_cursor().
 
 - Wheel Click: Erases the highlighted pixel
 
-- F + any CLICK: Fills all the pixels of the same color within an enclosed area with the new color (based on the mouse button pressed)
+- F + any CLICK: Fills all the pixels of the same color as the one clicked within an enclosed area with the new color (based on the mouse button pressed)
     Note: This uses a recursive method and has a failsafe of 800 layers (it stops after ~800 painted pixels). For areas larger than 800 pixels you'll need to use it multiple times to cover the entire area.
 
 ### Hotkeys:
