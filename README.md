@@ -33,11 +33,19 @@ Script to easily draw ASCII cursors compatible with pygame.mouse.set_cursor().
 - R: Takes Size input again and resets the canvas
     Note: This will clear the Canvas.
 
+- G: Shows or Hides the grid
+
+- 1: Set the size of the brush to 1 pixel (Default)
+
+- 2: Set the size of the brush to a 3x3 cross
+
 - S: Takes Name input and saves the current drawing as a cursor in pygame_cursor_library.py
     
     Note: This will append a new instance of the Cursor class to the end of the .py file. If you use an existing name, it won't delete the previous with the same name, but will override their instances on import, so it should always load the last cursor of said name.
 
 - L: Takes Name input and loads the drawing if it exists
+
+- Q: Quits the application
 
 ## USING THE CURSOR
 

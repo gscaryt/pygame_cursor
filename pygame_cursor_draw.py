@@ -21,6 +21,8 @@ class CursorCanvas:
         self.CORNER = (0,0)
         self.__recursion_failsafe = 0
         self.build_grid()
+        self.brush_size = 0
+        self.grid = True
 
     @property
     def WIDTH(self):
@@ -47,15 +49,16 @@ class CursorCanvas:
         pygame.draw.rect(WINDOW, COLOR_CANVAS, canva_rect)
 
     def show_grid(self, WINDOW):
-        for i in range(self.COLS):
-            for j in range(self.ROWS):
-                x = round(self.CORNER[0] + i*ZOOM)
-                y = round(self.CORNER[1] + j*ZOOM)
-                SQUARE = pygame.rect.Rect(x,y,ZOOM,ZOOM)
-                if self.HOT_SPOT == (i, j):
-                    pygame.draw.rect(WINDOW, COLOR_HOTSPOT, SQUARE, 1)
-                else:
-                    pygame.draw.rect(WINDOW, COLOR_GRID, SQUARE, 1)
+        if self.grid is True:
+            for i in range(self.COLS):
+                for j in range(self.ROWS):
+                    x = round(self.CORNER[0] + i*ZOOM)
+                    y = round(self.CORNER[1] + j*ZOOM)
+                    SQUARE = pygame.rect.Rect(x,y,ZOOM,ZOOM)
+                    if self.HOT_SPOT == (i, j):
+                        pygame.draw.rect(WINDOW, COLOR_HOTSPOT, SQUARE, 1)
+                    else:
+                        pygame.draw.rect(WINDOW, COLOR_GRID, SQUARE, 1)
 
     def show_drawing(self, WINDOW):
         for i in range(self.COLS):
@@ -86,21 +89,53 @@ class CursorCanvas:
     def highlight(self, WINDOW):
         hover = self.get_square()
         if hover:
-            x = self.CORNER[0] + hover[0]*ZOOM
-            y = self.CORNER[1] + hover[1]*ZOOM
+            x = self.CORNER[0] + (hover[0])*ZOOM
+            y = self.CORNER[1] + (hover[1])*ZOOM
             SQUARE = pygame.rect.Rect(x,y,ZOOM,ZOOM)
             pygame.draw.rect(WINDOW, COLOR_HIGHLIGHT, SQUARE, 1)
+            if self.brush_size > 0:
+                x = self.CORNER[0] + (hover[0]+self.brush_size)*ZOOM
+                y = self.CORNER[1] + (hover[1])*ZOOM
+                SQUARE = pygame.rect.Rect(x,y,ZOOM,ZOOM)
+                pygame.draw.rect(WINDOW, COLOR_HIGHLIGHT, SQUARE, 1)
+                x = self.CORNER[0] + (hover[0])*ZOOM
+                y = self.CORNER[1] + (hover[1]+self.brush_size)*ZOOM
+                SQUARE = pygame.rect.Rect(x,y,ZOOM,ZOOM)
+                pygame.draw.rect(WINDOW, COLOR_HIGHLIGHT, SQUARE, 1)
+                x = self.CORNER[0] + (hover[0])*ZOOM
+                y = self.CORNER[1] + (hover[1]-self.brush_size)*ZOOM
+                SQUARE = pygame.rect.Rect(x,y,ZOOM,ZOOM)
+                pygame.draw.rect(WINDOW, COLOR_HIGHLIGHT, SQUARE, 1)
+                x = self.CORNER[0] + (hover[0]-self.brush_size)*ZOOM
+                y = self.CORNER[1] + (hover[1])*ZOOM
+                SQUARE = pygame.rect.Rect(x,y,ZOOM,ZOOM)
+                pygame.draw.rect(WINDOW, COLOR_HIGHLIGHT, SQUARE, 1)
 
     def draw(self):
         if self.get_square():
+            paint = False
             click = pygame.mouse.get_pressed()
             col, row = self.get_square()
             if click == (1,0,0):
-                self.GRID[row][col] = 1
+                color = 1
+                paint = True
             elif click == (0,0,1):
-                self.GRID[row][col] = -1
+                color = -1
+                paint = True
             elif click == (0,1,0):
-                self.GRID[row][col] = 0
+                color = 0
+                paint = True
+            if paint:
+                self.GRID[row][col] = color
+                if self.brush_size > 0:
+                    if row < self.ROWS-1:
+                        self.GRID[row+1][col] = color
+                    if row > 0:
+                        self.GRID[row-1][col] = color
+                    if col < self.COLS-1:
+                        self.GRID[row][col+1] = color
+                    if col > 0:
+                        self.GRID[row][col-1] = color
 
     def fill(self):
         if self.get_square():
@@ -286,6 +321,12 @@ def main():
                     CANVAS.draw()
 
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    CANVAS.brush_size = 0
+                elif event.key == pygame.K_2:
+                    CANVAS.brush_size = 1
+                if event.key == pygame.K_g:
+                    CANVAS.grid = False if CANVAS.grid == True else True
                 if event.key == pygame.K_SPACE:
                     CANVAS.set_cursor()
                 if event.key == pygame.K_ESCAPE:
@@ -302,6 +343,8 @@ def main():
                     CANVAS.reset()
                     ZOOM = max(10 - int(CANVAS.ROWS//20), 1)
                     WINDOW = pygame.display.set_mode((CANVAS.WIDTH + ZOOM*10, CANVAS.HEIGHT + ZOOM*10))
+                if event.key == pygame.K_q:
+                    run = False
 
             if event.type == pygame.QUIT:
                 run = False
