@@ -48,7 +48,7 @@ eye = Cursor(
     )
 )
 
-transparent_eye = Cursor(
+transparenteye = Cursor(
     'transparent_eye',
     (32, 24),
     (15, 11),
@@ -80,7 +80,7 @@ transparent_eye = Cursor(
     )
 )
 
-ugly_rabbit = Cursor(
+uglyrabbit = Cursor(
     'ugly_rabbit',
     (24,16),
     (0,6),
