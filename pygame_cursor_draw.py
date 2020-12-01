@@ -1,3 +1,5 @@
+# Made by G. 'Scary' T. (2020)
+
 import pygame
 import pygame_cursor_library as pclib
 
