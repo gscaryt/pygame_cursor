@@ -101,3 +101,28 @@ ugly_rabbit = Cursor(
         '                        ',
     )
 )
+
+magnify = Cursor(
+    'magnify',
+    (24, 16),
+    (7, 5),
+    (
+        '     XXXXXX             ',
+        '    XXXXXXXX            ',
+        '   XX      XX           ',
+        '  XX   ...  XX          ',
+        '  XX  ..... XX          ',
+        '  XX     .. XX          ',
+        '  XX        XX          ',
+        '  XX        XXX         ',
+        '   XX      XX.XX        ',
+        '    XXXXXXXX...XX       ',
+        '     XXXXXXXX...XX      ',
+        '            XX...XX     ',
+        '             XX...XX    ',
+        '              XX...X    ',
+        '                XXX     ',
+        '                        ',
+    )
+)
+

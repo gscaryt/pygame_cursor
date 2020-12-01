@@ -1,14 +1,14 @@
 import pygame
-import pygame_cursor_lib as pclib
+import pygame_cursor_library as pclib
 
 ZOOM = 10
 COLOR_BG = (50,50,50)
 COLOR_CANVAS = (150,150,150)
 COLOR_GRID = (120,120,120)
-BLACK = (0,0,0)
-WHITE = (255,255,255)
 COLOR_HOTSPOT = (120,0,0)
 COLOR_HIGHLIGHT = (0,200,200)
+BLACK = (0,0,0)
+WHITE = (255,255,255)
 
 class CursorCanvas:
     def __init__(self, COLS, ROWS):
@@ -17,6 +17,7 @@ class CursorCanvas:
         self.GRID = []
         self.HOT_SPOT = (self.COLS//2, self.ROWS//2)
         self.CORNER = (0,0)
+        self.__recursion_failsafe = 0
         for j in range(ROWS):
             self.GRID.append([])
             for _ in range(COLS):
@@ -110,10 +111,24 @@ class CursorCanvas:
             else:
                 new_state = None
             if old_state != new_state and new_state is not None:
-                self.__fill(col, row, old_state, new_state)
+                for i in range(self.COLS*self.ROWS//800):
+                    if row > 0:
+                        row = row - i
+                    elif col > 0:
+                        col = col - i
+                    self.__fill(col, row, old_state, new_state)
+                    self.__recursion_failsafe = 0
 
     def __fill(self, col, row, old_state, new_state):
+        '''
+        Fill needs a recursion failsafe so it doesn't crash.
+        This introduces incomplete filling on big canvas (>32x24).
+        Need to find another way of doing it without recursion.
+        '''
         self.GRID[row][col] = new_state
+        self.__recursion_failsafe += 1
+        if self.__recursion_failsafe > 800:
+            return False
         if col < self.COLS-1:
             if self.get_square_state(col+1,row) == old_state:
                 self.__fill(col+1,row,old_state,new_state)
@@ -126,13 +141,7 @@ class CursorCanvas:
         if row > 0:
             if self.get_square_state(col,row-1) == old_state:
                 self.__fill(col,row-1,old_state,new_state)
-
-    def set_cursor(self, cursor=1):
-        if cursor == 0:
-            pygame.mouse.set_system_cursor(pygame.SYSTEM_CURSOR_ARROW)
-        else:
-            pygame.mouse.set_cursor((self.COLS, self.ROWS), self.HOT_SPOT, *pygame.cursors.compile(self.get_cursor()))
-        
+    
     def def_hotspot(self):
         if self.get_square():
             col, row = self.get_square()
@@ -154,8 +163,21 @@ class CursorCanvas:
             line = ''
         return tuple(cursor)
 
-    def open_cursor(self, name):
+    def set_cursor(self, cursor=1):
+        if cursor == 0:
+            pygame.mouse.set_system_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        else:
+            pygame.mouse.set_cursor((self.COLS, self.ROWS), self.HOT_SPOT, *pygame.cursors.compile(self.get_cursor()))
+
+    def load_cursor(self):
+        while True:
+            name = input("What is the name of the cursor you want to load? (Use ONLY letters): ")
+            if name.isalpha():
+                break
         name = str(name).lower()
+        if not name in pclib.Cursor.library.keys():
+            print(f"{name} doesn't exist in the library.")
+            return False
         cursor = pclib.Cursor.library[name]
         self.COLS = cursor.size[0]
         self.ROWS = cursor.size[1]
@@ -172,10 +194,14 @@ class CursorCanvas:
                 else:
                     self.GRID[i].append(0)
 
-    def save_cursor(self, name):
+    def save_cursor(self):
         cursor = self.get_cursor()
+        while True:
+            name = input("What is the name of the cursor you want to load? (Use ONLY letters): ")
+            if name.isalpha():
+                break
         name = str(name).lower()
-        with open("pygame_cursor_lib.py", "a+") as filename:
+        with open("pygame_cursor_library.py", "a+") as filename:
             filename.write(name + " = Cursor(\n")
             filename.write("    '" + name + "',\n") 
             filename.write("    " + str((self.COLS, self.ROWS)) + ",\n")
@@ -190,7 +216,7 @@ class CursorCanvas:
 def input_size():
     _valid = False
     while not _valid:
-        COLS = input("What WIDTH (columns) your cursor will have? (Must be divisible by 8)")
+        COLS = input("What WIDTH (columns) your cursor will have? (Must be divisible by 8): ")
         if COLS.isdecimal():
             COLS = int(COLS)
             if COLS == 0:
@@ -205,7 +231,7 @@ def input_size():
             print("You must give an integer number of columns (WIDTH).")
     _valid = False
     while not _valid:
-        ROWS = input("What HEIGHT (rows) your cursor will have? (Must be divisible by 8)")
+        ROWS = input("What HEIGHT (rows) your cursor will have? (Must be divisible by 8): ")
         if ROWS.isdecimal():
             ROWS = int(ROWS)
             if ROWS == 0:
@@ -258,11 +284,11 @@ def main():
                     CANVAS.set_cursor(0)
                 if event.key == pygame.K_h:
                     CANVAS.def_hotspot()
-                if event.key == pygame.K_o:
-                    CANVAS.open_cursor("eye")
+                if event.key == pygame.K_l:
+                    CANVAS.load_cursor()
                     WINDOW = pygame.display.set_mode((CANVAS.WIDTH + ZOOM*10, CANVAS.HEIGHT + ZOOM*10))
                 if event.key == pygame.K_s:
-                    CANVAS.save_cursor("TESTING")
+                    CANVAS.save_cursor()
 
             if event.type == pygame.QUIT:
                 run = False
