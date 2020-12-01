@@ -5,6 +5,7 @@ Script to easily draw ASCII cursors compatible with pygame.mouse.set_cursor().
 ## Operation:
 
 ### At Start:
+- Run pygame_cursor_draw.py
 - Choose the WIDTH (number of pixels in a row) and HEIGHT (number of rows).
     Note: These must be divisible by 8 and cannot be larger than 80.
 
