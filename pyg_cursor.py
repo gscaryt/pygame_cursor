@@ -121,9 +121,6 @@ class Canvas:
             filename.write("    return pygame.mouse.set_cursor(" + str((self.COLS, self.ROWS)) + ',' + str(self.HOT_SPOT) + ',' + '*pygame.cursors.compile(cursor_' + name + '))\n')
             filename.write("# END OF CURSOR FUNCTION: " + name + "\n\n")
 
-class TextInput:
-    pass
-
 def input_size():
     _valid = False
     while not _valid:
