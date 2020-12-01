@@ -10,6 +10,8 @@ class Cursor:
         self.size = size
         self.hot_spot = hot_spot
         self.cursor = cursor
+        if self.name in Cursor.library.keys():
+            Cursor.library.pop(self.name, None)
         Cursor.library[self.name] = self
 
     def set_cursor():
