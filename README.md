@@ -48,11 +48,13 @@ Script to easily draw ASCII cursors compatible with pygame.mouse.set_cursor().
 The cursor is saved in the file pygame_cursor_library.py. There are two simple ways of using your cursor:
 
 - Import:
+
     import pygame_cursor_library as pclib
     
     pclib.Cursor.library['name'].set_cursor()
 
 - Copy and Paste: 
+
     Just copy and paste the created tuples (size, hot_spot, cursor) onto your code and set the cursor with:
     
     pygame.mouse.set_cursor(SIZE_TUPLE,HOT_SPOT_TUPLE,*pygame.cursors.compile(CURSOR_TUPLE))
