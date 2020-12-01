@@ -114,13 +114,8 @@ class CursorCanvas:
             else:
                 new_state = None
             if old_state != new_state and new_state is not None:
-                for i in range(self.COLS*self.ROWS//800):
-                    if row > 0:
-                        row = row - i
-                    elif col > 0:
-                        col = col - i
-                    self.__fill(col, row, old_state, new_state)
-                    self.__recursion_failsafe = 0
+                self.__fill(col, row, old_state, new_state)
+                self.__recursion_failsafe = 0
 
     def __fill(self, col, row, old_state, new_state):
         '''
