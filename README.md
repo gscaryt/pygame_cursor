@@ -40,6 +40,9 @@ Script to easily draw ASCII cursors compatible with pygame.mouse.set_cursor().
 - S: Takes Name input and saves the current drawing as a cursor in pygame_cursor_library.py
     
     Note: This will append a new instance of the Cursor class to the end of the .py file. If you use an existing name, it won't delete the previous with the same name, but will override their instances on import, so it should always load the last cursor of said name.
+- I: Returns the Names of the cursors in the library dictionary.
+
+    Note: If the library contains more than one cursor with the same Name, the dictionary will only contain the last instance of it.
 - L: Takes Name input and loads the drawing if it exists
 - Q: Quits the application
 

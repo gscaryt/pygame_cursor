@@ -204,6 +204,9 @@ class CursorCanvas:
         else:
             pygame.mouse.set_cursor((self.COLS, self.ROWS), self.HOT_SPOT, *pygame.cursors.compile(self.get_cursor()))
 
+    def get_lib_index(self):
+       print(pclib.Cursor.library.keys()) 
+
     def load_cursor(self):
         while True:
             name = input("What is the name of the cursor you want to load? (Use ONLY letters): ")
@@ -333,6 +336,8 @@ def main():
                     CANVAS.set_cursor(0)
                 if event.key == pygame.K_h:
                     CANVAS.def_hotspot()
+                if event.key == pygame.K_i:
+                    CANVAS.get_lib_index()
                 if event.key == pygame.K_l:
                     CANVAS.load_cursor()
                     ZOOM = max(10 - int(CANVAS.ROWS//20), 1)
