@@ -10,6 +10,10 @@ Script to easily draw ASCII cursors compatible with pygame.mouse.set_cursor().
 - Fill tool to color a large enclosed area with one click.
 - 2 sizes of brush to speed the work.
 
+### Requirements:
+- Python 3.8 or higher (untested on older versions)
+- Pygame 2.0 or higher
+
 ## Instructions:
 
 ### At Start:
@@ -46,13 +50,13 @@ Script to easily draw ASCII cursors compatible with pygame.mouse.set_cursor().
 - L: Takes Name input and loads the drawing if it exists
 - Q: Quits the application
 
-## USING THE CURSOR
+## ADDING THE CURSOR TO YOUR GAME
 
 The cursor is saved in the file pygame_cursor_library.py. There are two simple ways of using your cursor:
 
 - Import:
 
-    import pygame_cursor_library as pclib
+    import pygame_cursor_library as pclib # Must be in the same folder of your game, or add the proper path before the module name.
     
     pclib.Cursor.library['name'].set_cursor()
 
