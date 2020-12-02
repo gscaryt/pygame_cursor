@@ -52,7 +52,7 @@ The cursor is saved in the file pygame_cursor_library.py. There are two simple w
 
 - Import:
 
-    import pygame_cursor_library as pclib
+    import pygame_cursor_library as pclib # Must be in the same folder of your game, or add the proper path before the module name.
     
     pclib.Cursor.library['name'].set_cursor()
 
