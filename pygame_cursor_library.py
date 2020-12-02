@@ -53,7 +53,7 @@ sysarrow = Cursor( # from System
 syshand = Cursor( # from System
     'syshand',
     (24,24),
-    (,)
+    (0,5)
     (
         "     XX                 ",
         "    X..X                ",
