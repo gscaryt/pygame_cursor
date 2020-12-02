@@ -18,40 +18,104 @@ class Cursor:
         pygame.mouse.set_cursor(self.size,self.hot_spot,*pygame.cursors.compile(self.cursor))
 
 
-eye = Cursor(
+sysarrow = Cursor( # from System
+    'sysarrow',
+    (24,24),
+    (0,0),
+    (
+        "X                       ",
+        "XX                      ",
+        "X.X                     ",
+        "X..X                    ",
+        "X...X                   ",
+        "X....X                  ",
+        "X.....X                 ",
+        "X......X                ",
+        "X.......X               ",
+        "X........X              ",
+        "X.........X             ",
+        "X..........X            ",
+        "X......XXXXX            ",
+        "X...X..X                ",
+        "X..X X..X               ",
+        "X.X  X..X               ",
+        "XX    X..X              ",
+        "      X..X              ",
+        "       XX               ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+        "                        ",
+    )
+)
+
+syshand = Cursor( # from System
+    'syshand',
+    (24,24),
+    (,)
+    (
+        "     XX                 ",
+        "    X..X                ",
+        "    X..X                ",
+        "    X..X                ",
+        "    X..X                ",
+        "    X..XXX              ",
+        "    X..X..XXX           ",
+        "    X..X..X..XX         ",
+        "    X..X..X..X.X        ",
+        "XXX.X..X..X..X..X       ",
+        "X..XX........X..X       ",
+        "X...X...........X       ",
+        " X..............X       ",
+        "  X.............X       ",
+        "  X.............X       ",
+        "   X............X       ",
+        "   X...........X        ",
+        "    X..........X        ",
+        "    X..........X        ",
+        "     X........X         ",
+        "     X........X         ",
+        "     XXXXXXXXXX         ",
+        "                        ",
+        "                        ",
+    )
+)
+
+eye = Cursor( # by G. Scary T.
     'eye',
     (32,24),
     (15,11),
     (    
-    "                                ",
-    "                                ",
-    "             XXXXX              ",
-    "           XXXXXXXXX            ",
-    "         XXXX.....XXXX          ",
-    "       XXXX.........XXXX        ",
-    "      XXX.....XXX.....XXX       ",
-    "     XXX....XXXXXXX....XXX      ",
-    "    XXX....XXXXXX.XX....XXX     ",
-    "   XXX....XXXXXX...XX....XXX    ",
-    "  XXX....XXXXXXX...XXX....XXX   ",
-    " XXX.....XXXXXXXX..XXX.....XXX  ",
-    "XXX......XXXXXXXXX.XXX......XXX ",
-    " XXX.....XXXXXXXXXXXXX.....XXX  ",
-    "  XXX.....XXXXXXXXXXX.....XXX   ",
-    "   XXX.....XXXXXXXXX.....XXX    ",
-    "    XXX.....XXXXXXX.....XXX     ",
-    "     XXX......XXX......XXX      ",
-    "      XXXX...........XXXX       ",
-    "        XXXX.......XXXX         ",
-    "          XXXXXXXXXXX           ",
-    "            XXXXXXX             ",
-    "                                ",
-    "                                ",
+        "                                ",
+        "                                ",
+        "             XXXXX              ",
+        "           XXXXXXXXX            ",
+        "         XXXX.....XXXX          ",
+        "       XXXX.........XXXX        ",
+        "      XXX.....XXX.....XXX       ",
+        "     XXX....XXXXXXX....XXX      ",
+        "    XXX....XXXXXX.XX....XXX     ",
+        "   XXX....XXXXXX...XX....XXX    ",
+        "  XXX....XXXXXXX...XXX....XXX   ",
+        " XXX.....XXXXXXXX..XXX.....XXX  ",
+        "XXX......XXXXXXXXX.XXX......XXX ",
+        " XXX.....XXXXXXXXXXXXX.....XXX  ",
+        "  XXX.....XXXXXXXXXXX.....XXX   ",
+        "   XXX.....XXXXXXXXX.....XXX    ",
+        "    XXX.....XXXXXXX.....XXX     ",
+        "     XXX......XXX......XXX      ",
+        "      XXXX...........XXXX       ",
+        "        XXXX.......XXXX         ",
+        "          XXXXXXXXXXX           ",
+        "            XXXXXXX             ",
+        "                                ",
+        "                                ",
     )
 )
 
-transparenteye = Cursor(
-    'transparent_eye',
+transparenteye = Cursor( # by G. Scary T.
+    'transparenteye',
     (32, 24),
     (15, 11),
     (
@@ -82,8 +146,8 @@ transparenteye = Cursor(
     )
 )
 
-uglyrabbit = Cursor(
-    'ugly_rabbit',
+uglybunny = Cursor( # by G. Scary T.
+    'uglybunny',
     (24,16),
     (0,6),
     (
@@ -106,7 +170,7 @@ uglyrabbit = Cursor(
     )
 )
 
-magnify = Cursor(
+magnify = Cursor( # by G. Scary T.
     'magnify',
     (24, 16),
     (7, 5),
