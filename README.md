@@ -50,7 +50,7 @@ Script to easily draw ASCII cursors compatible with pygame.mouse.set_cursor().
 - L: Takes Name input and loads the drawing if it exists
 - Q: Quits the application
 
-## USING THE CURSOR
+## ADDING THE CURSOR TO YOUR GAME
 
 The cursor is saved in the file pygame_cursor_library.py. There are two simple ways of using your cursor:
 
